@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<meta name="description" content="" />
+	<meta name="author" content="" />
+	<title>Dashboard - SB Admin</title>
+	<link href="<?php echo base_url() ?>public/dist/css/styles.css" rel="stylesheet" />
+	<link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+	<script src="<?php echo base_url() ?>public/layer/layer.js?v=3111"></script>
+</head>
+<body class="sb-nav-fixed">
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+	<a class="navbar-brand" >Starter</a><button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+
+</nav>
+<div id="layoutSidenav">
+	<div id="layoutSidenav_nav">
+		<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+			<div class="sb-sidenav-menu">
+				<div class="nav">
+					<div class="sb-sidenav-menu-heading">Core</div>
+					<a class="nav-link" href="?/"
+					><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+						My Groups</a></div>
+			</div>
+			<div class="sb-sidenav-footer">
+				<div class="small">Logged in as:
+					<?php echo $userName ?>
+					<a  href="?/member/logout">log out</a>
+				</div>
+			</div>
+		</nav>
+	</div>
+	<div id="layoutSidenav_content">
+		<main>
+			<div class="container-fluid">
+				<h1 class="mt-4"><?php echo $group['group_name'] ?></h1>
+				<ol class="breadcrumb mb-4">
+					<li class="breadcrumb-item active"><?php echo $group['group_name'] ?></li>
+				</ol>
+
+
+				<div class="row">
+					<div class="col-xl-3 col-md-6">
+						<div class="card bg-light" style="width: 18rem;">
+							<div class="card-body">
+								<h5 class="card-title">Voting Event</h5>
+								<p class="card-text">
+									<?php if (count($running_event) > 0) : ?>
+								<div class="spinner-grow text-primary" role="status">
+									<span class="sr-only">Loading...</span>
+								</div>
+								<div class="spinner-grow text-secondary" role="status">
+									<span class="sr-only">Loading...</span>
+								</div>
+								<div class="spinner-grow text-success" role="status">
+									<span class="sr-only">Loading...</span>
+								</div>
+								<div class="spinner-grow text-danger" role="status">
+									<span class="sr-only">Loading...</span>
+								</div>
+								<div class="spinner-grow text-warning" role="status">
+									<span class="sr-only">Loading...</span>
+								</div>
+								<div class="spinner-grow text-dark" role="status">
+									<span class="sr-only">Loading...</span>
+								</div>
+								<div>
+
+									<p>Event <?php echo $running_event['title'] ?> is on progress!</p>
+									<?php if ($admin == 1): ?>
+									<a id="cvendds" href="javascript:;" class="btn btn-dark">Close this event</a>
+									<?php endif ?>
+									<script>
+										$("#cvendds").on('click', function(){
+											var id = "<?php echo $running_event['id']  ?>"
+											if (id == '') {
+												alert("error group id");
+											} else {
+												$.post('?/voting/endEvent',{
+													'id':id,
+												}, function (data) {
+													location.reload()
+												});
+											}
+
+										});
+									</script>
+								</div>
+									<?php endif ?>
+								<?php if ($admin == 1): ?>
+									<?php if (count($running_event) == 0) : ?>
+										<a id="cvtt" href="javascript:;" class="btn btn-dark">Create Voting Event</a>
+										<script>
+											$("#cvtt").on('click', function(){
+												var group_id = "<?php echo $group['id']  ?>"
+												if (group_id == '') {
+													alert("error group id");
+												} else {
+													$.post('?/voting/createEvent',{
+														'group_id':group_id,
+													}, function (data) {
+														location.reload()
+													});
+												}
+
+											});
+										</script>
+									<?php endif ?>
+								<?php endif ?>
+								<?php if ($admin == 0): ?>
+									<?php if (count($running_event) == 0) : ?>
+								<p>Witing for moderator to start an event!</p>
+									<?php endif ?>
+								<?php endif ?>
+
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-3 col-md-6">
+						<div class="card bg-light" style="width: 18rem;">
+							<div class="card-body">
+								<h5 class="card-title">Voting Event History</h5>
+								<div class="card-text">
+
+									<?php foreach ($history_event as $item):?>
+										<p><a id ="hsvcsd<?php echo $item['id'] ?>" href="javascript:;" ><?php echo $item['title'] ?></a></p>
+										<script>
+											$("#hsvcsd<?php echo $item['id'] ?>").on('click', function(){
+												layer.open({
+													type: 2,
+													title: '',
+													maxmin: true,
+													shadeClose: true, //点击遮罩关闭层
+													area : ['1000px' , '600px'],
+													content: "?/voting/result?id=<?php echo $item['id'] ?>"
+												});
+											});
+										</script>
+									<?php endforeach ?>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+				<br />
+
+
+
+				<br />
+				<div class="row">
+					<div class="col-xl-3 col-md-6">
+						<?php if ($admin == 1): ?>
+						<div class="card bg-light" style="width: 18rem;">
+							<div class="card-body">
+								<h5 class="card-title">Retrieve Movies</h5>
+								<a href="javascript:;" id="rtm" class="btn btn-primary">Retrieve</a>
+								<a href="javascript:;" id="clm" class="btn btn-disabled">Clear All Movies</a>
+								<script>
+									$("#rtm").on('click', function(){
+										var group_id = "<?php echo $group['id']  ?>"
+										if (group_id == '') {
+											alert("error group id");
+										} else {
+											$.post('?/watching/retrieveMovies',{
+												'group_id':group_id,
+											}, function (data) {
+												location.reload()
+											});
+										}
+
+									});
+									$("#clm").on('click', function(){
+										var group_id = "<?php echo $group['id']  ?>"
+										if (group_id == '') {
+											alert("error group id");
+										} else {
+											$.post('?/watching/clearAllMovies',{
+												'group_id':group_id,
+											}, function (data) {
+												location.reload()
+											});
+										}
+
+									});
+								</script>
+							</div>
+						</div>
+						<?php endif ?>
+					</div>
+					<?php foreach ($movie_list as $item):?>
+					<!------->
+					<?php if ($item['backdrop_path'] != ""): ?>
+					<div class="col-xl-3 col-md-6">
+						<div class="card" style="width: 18rem;">
+							<img src="https://image.tmdb.org/t/p/original/<?php echo $item['backdrop_path'] ?>" class="card-img-top" alt="...">
+							<div class="card-body">
+								<h5 class="card-title"><?php echo substr($item['title'],0, 20)  ?></h5>
+								<p class="card-text"><?php echo substr($item['overview'], 0, 100)  ?></p>
+								<a id ="detail<?php echo $item['mid']; ?>" href="javascript:;" class="btn btn-primary">Detail</a>
+								<?php if (count($running_event) > 0) : ?>
+									<a href="javascript:;" id="vote<?php echo $item['mid'] ?>" class="btn btn-danger"><img src="https://img.icons8.com/dusk/22/000000/facebook-like.png"/></a>
+									<script>
+										$("#vote<?php echo $item['mid'] ?>").on('click', function(){
+
+											var event_id = "<?php echo $running_event['id'] ?>"
+											var movie_id = "<?php echo $item['mid']; ?>"
+											var movie_title = "<?php echo $item['title']  ?>"
+
+											$.post('?/voting/vote',{
+												'event_id':event_id,
+												'movie_id': movie_id,
+												'movie_title' : movie_title
+											}, function (data) {
+												var obj = jQuery.parseJSON(data)
+												if (obj.errno < 0) {
+													alert("Can vote only once!")
+												} else {
+													alert("Success!")
+												}
+											});
+
+										});
+									</script>
+								<?php endif ?>
+							</div>
+						</div>
+					</div>
+
+					<script>
+						$("#detail<?php echo $item['mid']; ?>").on('click', function(){
+							layer.open({
+								type: 2,
+								title: '',
+								maxmin: true,
+								shadeClose: true,
+								area : ['900px' , '520px'],
+								content: "?/watching/detail?mid=<?php echo $item['mid']; ?>"
+							});
+						});
+					</script>
+
+					<?php endif ?>
+					<!--------->
+					<?php endforeach;?>
+
+					</div>
+
+
+				</div>
+
+
+		</main>
+		<footer class="py-4 bg-light mt-auto">
+			<div class="container-fluid">
+				<div class="d-flex align-items-center justify-content-between small">
+					<div class="text-muted">Copyright &copy; Your Website 2019</div>
+					<div>
+						<a href="#">Privacy Policy</a>
+						&middot;
+						<a href="#">Terms &amp; Conditions</a>
+					</div>
+				</div>
+			</div>
+		</footer>
+	</div>
+</div>
+<script>
+	$.get('?/notifications/getNewMsg',{
+
+	}, function (data) {
+		var obj = jQuery.parseJSON(data)
+		if (obj.errno == 0) {
+
+		} else {
+			layer.open({
+				type: 1,
+				title: 'New MSG',
+				skin: 'layui-layer-rim', //加上边框
+				area: ['450px', '240px'], //宽高
+				content: obj.msg,
+			});
+		}
+	});
+</script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="<?php echo base_url() ?>public/dist/js/scripts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+<script src="<?php echo base_url() ?>public/dist/assets/demo/chart-area-demo.js"></script>
+<script src="<?php echo base_url() ?>public/dist/assets/demo/chart-bar-demo.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+<script src="<?php echo base_url() ?>public/dist/assets/demo/datatables-demo.js"></script>
+</body>
+</html>

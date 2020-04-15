@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<meta name="description" content="" />
+	<meta name="author" content="" />
+	<title>Dashboard - Groups</title>
+	<link href="<?php echo base_url() ?>public/dist/css/styles.css" rel="stylesheet" />
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+	<link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" crossorigin="anonymous"></script>
+	<script src="<?php echo base_url() ?>public/layer/layer.js?v=3111"></script>
+</head>
+<body class="sb-nav-fixed">
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+	<a class="navbar-brand" >Starter</a><button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+
+</nav>
+<div id="layoutSidenav">
+	<div id="layoutSidenav_nav">
+		<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+			<div class="sb-sidenav-menu">
+				<div class="nav">
+					<div class="sb-sidenav-menu-heading">Core</div>
+					<a class="nav-link" href="?/"
+					><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+						My Groups</a></div>
+			</div>
+			<div class="sb-sidenav-footer">
+				<div class="small">Logged in as:
+					<?php echo $userName ?>
+					<a  href="?/member/logout">log out</a>
+				</div>
+			</div>
+		</nav>
+	</div>
+	<div id="layoutSidenav_content">
+		<main>
+			<div class="container-fluid">
+				<h1 class="mt-4">My Groups</h1>
+				<ol class="breadcrumb mb-4">
+					<li class="breadcrumb-item active">My Groups</li>
+				</ol>
+				<div class="row">
+					<div class="col-xl-3 col-md-6">
+						<div class="card bg-light" style="width: 18rem;">
+							<div class="card-body">
+								<h5 class="card-title">Create Group</h5>
+								<p class="card-text">
+									<input class="form-control py-4" id="inputgname" placeholder="Enter group name"></p>
+								<a href="#" class="btn btn-primary" id="cgroup">Create group</a>
+								<script>
+									$("#cgroup").click(function () {
+										var group_name = $("#inputgname").val()
+										if (group_name == '') {
+											alert("error group name");
+										} else {
+											$.post('?/group/newGroup',{
+												'group_name':group_name,
+											}, function (data) {
+												location.reload()
+											});
+										}
+									})
+
+								</script>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-3 col-md-6">
+						<div class="card bg-light" style="width: 18rem;">
+							<div class="card-body">
+								<h5 class="card-title">Join a group</h5>
+								<p class="card-text input-group">
+
+									<input class="form-control py-4" id="gpid" placeholder="Enter group ID" ></p>
+									<input class="form-control py-4" id="gpcode" placeholder="Enter group password"></p>
+								<a href="#" class="btn btn-dark" id="joingp">Join group</a>
+								<script>
+									$("#joingp").click(function () {
+										var group_id = $("#gpid").val()
+										var group_pwd = $("#gpcode").val()
+										if (group_id == '') {
+											alert("error group id");
+										} else if (group_pwd == "") {
+											alert("error group group_pwd");
+										}else {
+											$.post('?/group/subscribe',{
+												'group_id':group_id,
+												'group_pwd':group_pwd
+											}, function (data) {
+												location.reload()
+											});
+										}
+									})
+								</script>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="row">
+					<?php foreach ($my_groups as $item):?>
+
+					<!------->
+					<div class="col-xl-3 col-md-6" style="margin-top: 10px;">
+						<div class="card" style="max-width: 18rem;">
+							<div class="card" style="width: 18rem;">
+								<div class="card-body">
+									<h5 class="card-title"><?php echo $item['group_name'] ?></h5>
+									<table class="table">
+
+										<tr>
+											<td><a href="#" id="invite<?php echo $item['id']  ?>" class="btn btn-info">Invite</a></td>
+											<td><a href="?/watching?group=<?php echo $item['id']  ?>"  class="btn btn-dark">Events</a></td>
+										</tr>
+										<script>
+											$("#invite<?php echo $item['id']  ?>").on('click', function(){
+												var content = "send group id  <b><?php echo $item['id']  ?></b>  and password <b><?php echo $item['pwd']  ?> </b> to your friends to invite them."
+												layer.alert(content,
+														{icon: 6,
+														btn:['ok'],
+														title: false,
+														});
+
+											});
+
+										</script>
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+					<!--------->
+
+					<?php endforeach;?>
+
+
+					<?php foreach ($joined_groups as $item):?>
+
+					<!------->
+					<div class="col-xl-3 col-md-6" style="margin-top: 10px;">
+						<div class="card" style="max-width: 18rem;">
+							<div class="card" style="width: 18rem;">
+								<div class="card-body">
+									<h5 class="card-title"><?php echo $item['group_name'] ?></h5>
+									<table class="table">
+
+										<tr>
+											<td><a href="#" id="unsubscribe<?php echo $item['id']  ?>" class="btn btn-danger">Unsubscribe</a></td>
+											<td><a href="?/watching?group=<?php echo $item['id']  ?>"  class="btn btn-dark"> Events</a></td>
+
+										</tr>
+										<script>
+											$("#unsubscribe<?php echo $item['id']  ?>").on('click', function(){
+												var group_id = '<?php echo $item["id"]  ?>'
+												if (group_id == '') {
+													alert("error group id");
+												} else {
+													$.post('?/group/unsubscribe',{
+														'group_id':group_id,
+													}, function (data) {
+														location.reload()
+													});
+												}
+
+											});
+										</script>
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+					<!--------->
+
+					<?php endforeach;?>
+
+				</div>
+
+			</div>
+		</main>
+		<footer class="py-4 bg-light mt-auto">
+			<div class="container-fluid">
+				<div class="d-flex align-items-center justify-content-between small">
+					<div class="text-muted">Copyright &copy; Your Website 2019</div>
+					<div>
+						<a href="#">Privacy Policy</a>
+						&middot;
+						<a href="#">Terms &amp; Conditions</a>
+					</div>
+				</div>
+			</div>
+		</footer>
+	</div>
+</div>
+<script>
+	$.get('?/notifications/getNewMsg',{
+
+	}, function (data) {
+		var obj = jQuery.parseJSON(data)
+		if (obj.errno == 0) {
+
+		} else {
+			layer.open({
+				type: 1,
+				title: 'New MSG',
+				skin: 'layui-layer-rim', //加上边框
+				area: ['450px', '240px'], //宽高
+				content: obj.msg,
+			});
+		}
+	});
+</script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="<?php echo base_url() ?>public/dist/js/scripts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+<script src="<?php echo base_url() ?>public/dist/assets/demo/chart-area-demo.js"></script>
+<script src="<?php echo base_url() ?>public/dist/assets/demo/chart-bar-demo.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+<script src="<?php echo base_url() ?>public/dist/assets/demo/datatables-demo.js"></script>
+</body>
+</html>
