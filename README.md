@@ -13,29 +13,39 @@ Project/ood/www/
 ### 3. Run the following commands in the command line tool：
 ```
 docker pull nginx
-
+```
+```
 docker pull php
-
+```
+```
 docker run --name  ood-php-fpm -v ~/Project/ood/www:/www -d php:5.6-fpm
-
+```
+```
 docker exec -it ood-php-fpm bash
-
+```
+```
 docker-php-ext-install mysqli
-
+```
+```
 exit
-
+```
+```
 docker restart ood-php-fpm
-
+```
+```
 docker run --name ood-nginx -p 8083:80 -d \
     -v ~/Project/ood/www:/usr/share/nginx/html:ro \
     -v ~/Project/ood/conf/conf.d:/etc/nginx/conf.d:ro \
     --link ood-php-fpm:php \
     nginx
-
+```
+```
 docker run -itd --name ood-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 mysql:5.6.47
-
+```
+```
 docker pull phpmyadmin/phpmyadmin
-
+```
+```
 docker run --name myadmin -d --link ood-mysql:db -p 8011:80 phpmyadmin/phpmyadmin
 ```
 ### 4. Get the IP address of "ood-mysql" from the following command:
